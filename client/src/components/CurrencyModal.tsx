@@ -1,17 +1,17 @@
 import { useState } from 'react';
 import type { CurrencyInfo } from '../types/currency';
-import { POPULAR_CURRENCIES } from '../hooks/useCurrency';
 
 interface CurrencyModalProps {
+  currencies: CurrencyInfo[];
   onSelect: (currency: CurrencyInfo) => void;
   onClose: () => void;
 }
 
-function CurrencyModal({ onSelect, onClose }: CurrencyModalProps) {
+function CurrencyModal({ currencies, onSelect, onClose }: CurrencyModalProps) {
   const [query, setQuery] = useState('');
 
-  const filtered = POPULAR_CURRENCIES.filter(
-    (c) =>c.code.toLowerCase().includes(query.toLowerCase()) ||c.name.toLowerCase().includes(query.toLowerCase())
+  const filtered = currencies.filter(
+    (c) => c.code.toLowerCase().includes(query.toLowerCase()) || c.name.toLowerCase().includes(query.toLowerCase())
   );
 
   return (
@@ -47,8 +47,8 @@ function CurrencyModal({ onSelect, onClose }: CurrencyModalProps) {
                 className="w-6 h-4 rounded-sm object-cover shadow-xs"
               />
               <span className="text-sm">
-                <strong className="text-slate-900">{c.code}</strong>{' '}
-                <span className="text-slate-500">- {c.name}</span>
+                <strong className="text-slate-900">{c.code}</strong> -{' '}
+                <span className="text-slate-500">{c.name}</span>
               </span>
             </div>
           ))}

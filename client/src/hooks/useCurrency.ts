@@ -1,35 +1,11 @@
 import { useState, useEffect } from 'react';
 import type { CurrencyInfo } from '../types/currency';
-import { fetchLatestRates } from '../api/currencyService';
-
-export const POPULAR_CURRENCIES: CurrencyInfo[] = [
-    { code: 'USD', name: 'United States Dollar', countryCode: 'us' },
-    { code: 'INR', name: 'Indian Rupee', countryCode: 'in' },
-    { code: 'EUR', name: 'Euro', countryCode: 'eu' },
-    { code: 'GBP', name: 'British Pound', countryCode: 'gb' },
-    { code: 'CAD', name: 'Canadian Dollar', countryCode: 'ca' },
-
-    { code: 'AUD', name: 'Australian Dollar', countryCode: 'au' },
-    { code: 'JPY', name: 'Japanese Yen', countryCode: 'jp' },
-    { code: 'CNY', name: 'Chinese Yuan', countryCode: 'cn' },
-    { code: 'CHF', name: 'Swiss Franc', countryCode: 'ch' },
-    { code: 'NZD', name: 'New Zealand Dollar', countryCode: 'nz' },
-    { code: 'HKD', name: 'Hong Kong Dollar', countryCode: 'hk' },
-    { code: 'SGD', name: 'Singapore Dollar', countryCode: 'sg' },
-    { code: 'SEK', name: 'Swedish Krona', countryCode: 'se' },
-    { code: 'KRW', name: 'South Korean Won', countryCode: 'kr' },
-    { code: 'MXN', name: 'Mexican Peso', countryCode: 'mx' },
-    { code: 'BRL', name: 'Brazilian Real', countryCode: 'br' },
-    { code: 'ZAR', name: 'South African Rand', countryCode: 'za' },
-    { code: 'AED', name: 'United Arab Emirates Dirham', countryCode: 'ae' },
-    { code: 'SAR', name: 'Saudi Riyal', countryCode: 'sa' },
-    { code: 'NOK', name: 'Norwegian Krone', countryCode: 'no' },
-    { code: 'DKK', name: 'Danish Krone', countryCode: 'dk' }
-];
+import { fetchLatestRates, fetchCurrencies } from '../api/currencyService';
 
 export function useCurrency() {
-    const [fromCurrency, setFromCurrency] = useState<CurrencyInfo>(POPULAR_CURRENCIES[0]);
-    const [toCurrency, setToCurrency] = useState<CurrencyInfo>(POPULAR_CURRENCIES[1]);
+    const [currencies, setCurrencies] = useState<CurrencyInfo[]>([]);
+    const [fromCurrency, setFromCurrency] = useState<CurrencyInfo>({ code: 'USD', name: 'United States Dollar', countryCode: 'us' });
+    const [toCurrency, setToCurrency] = useState<CurrencyInfo>({ code: 'INR', name: 'Indian Rupee', countryCode: 'in' });
 
     const [fromAmount, setFromAmount] = useState<number | string>(1);
     const [toAmount, setToAmount] = useState<number | string>('');
@@ -37,6 +13,25 @@ export function useCurrency() {
     const [exchangeRate, setExchangeRate] = useState<number>(1);
     const [loading, setLoading] = useState<boolean>(false);
     const [error, setError] = useState<string | null>(null);
+
+    
+    useEffect(() => {
+        const getCurrencies = async () => {
+            try {
+                const data = await fetchCurrencies();
+                const formatted: CurrencyInfo[] = Object.entries(data).map(([code, name]) => ({
+                    code,
+                    name,
+                    countryCode: code.slice(0, 2).toLowerCase(),
+                }));
+                setCurrencies(formatted);
+            } catch (err) {
+                console.error('Failed to load currency list', err);
+            }
+        };
+        getCurrencies();
+    }, []);
+
 
     useEffect(() => {
         let isMounted = true;
@@ -89,6 +84,7 @@ export function useCurrency() {
     };
 
     return {
+        currencies,
         fromCurrency, setFromCurrency, toCurrency, setToCurrency,
         fromAmount, toAmount, exchangeRate, loading, error,
         handleFromAmountChange, handleToAmountChange, handleSwap,

@@ -5,7 +5,7 @@ import CurrencyModal from './components/CurrencyModal';
 import type { CurrencyInfo } from './types/currency';
 
 function App() {
-  const { fromCurrency, setFromCurrency, toCurrency, setToCurrency, fromAmount, toAmount, exchangeRate, loading, error, handleFromAmountChange, handleToAmountChange, handleSwap, } = useCurrency();
+  const { currencies, fromCurrency, setFromCurrency, toCurrency, setToCurrency, fromAmount, toAmount, exchangeRate, loading, error, handleFromAmountChange, handleToAmountChange, handleSwap, } = useCurrency();
 
   const [modalType, setModalType] = useState<'from' | 'to' | null>(null);
 
@@ -61,6 +61,7 @@ function App() {
 
       {modalType && (
         <CurrencyModal
+          currencies={currencies}
           onClose={() => setModalType(null)}
           onSelect={(selected: CurrencyInfo) => {
             if (modalType === 'from') setFromCurrency(selected);

@@ -9,3 +9,12 @@ export async function fetchLatestRates(baseCurrency: string): Promise<ExchangeRa
   }
   return response.json();
 }
+
+// Add this function to get all available currencies
+export async function fetchCurrencies(): Promise<Record<string, string>> {
+  const response = await fetch(`${BASE_URL}/currencies`);
+  if (!response.ok) {
+    throw new Error('Failed to fetch currencies');
+  }
+  return response.json();
+}
