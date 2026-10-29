@@ -1,44 +1,96 @@
+
 import type { CurrencyInfo } from '../types/currency';
 
 interface CurrencyInputProps {
-    label: string;
-    amount: number | string;
-    currency: CurrencyInfo;
-    onAmountChange: (value: string) => void;
-    onOpenModal: () => void;
-
+  label: string;
+  amount: string;
+  currency: CurrencyInfo;
+  onAmountChange: (value: string) => void;
+  onOpenModal: () => void;
+  disabled?: boolean;
 }
 
-function CurrencyInput({ label, amount, currency, onAmountChange, onOpenModal, }: CurrencyInputProps) {
-    return (
-        <div className="flex-1">
-            <div className="flex items-center border-2 border-slate-200 rounded-xl bg-white overflow-hidden focus-within:border-blue-500 transition-colors">
-                <input
-                    type="number"
-                    value={amount}
-                    onChange={(e) => onAmountChange(e.target.value)}
-                    placeholder="0.00"
-                    className="w-full flex-1 py-3.5 px-4 text-xl font-semibold text-slate-800 outline-none bg-transparent"
-                />
-                <button
-                    onClick={onOpenModal}
-                    className="flex items-center gap-2 py-3 px-3.5 border-l border-slate-200 bg-slate-50 hover:bg-slate-100 transition-colors cursor-pointer"
-                >
-                    <img
-                        src={`https://flagcdn.com/w40/${currency.countryCode}.png`}
-                        alt={currency.code}
-                        className="w-6 h-4 rounded-sm object-cover shadow-sm"
-                    />
-                    <span className="font-bold text-sm text-slate-700">{currency.code}</span>
-                    <span className="text-[10px] text-slate-500">v</span>
-                </button>
-            </div>
-            <span className="block mt-1.5 text-xs font-medium text-slate-500">
-                {label} ({currency.name})
-            </span>
-        </div>
-    );
-}
+function CurrencyInput({
+  label,
+  amount,
+  currency,
+  onAmountChange,
+  onOpenModal,
+  disabled = false,
+}: CurrencyInputProps) {
+  return (
+    <div className="min-w-0 flex-1">
+      <div className="mb-3 flex items-center justify-between gap-2">
+        <label
+          htmlFor={`amount-${label}`}
+          className="text-sm font-medium text-slate-500"
+        >
+          {label}
+        </label>
 
+        <span className="truncate text-xs text-slate-400">
+          {currency.name}
+        </span>
+      </div>
+
+      <div className="flex min-w-0 items-center gap-2 sm:gap-3">
+        <input
+          id={`amount-${label}`}
+          type="text"
+          inputMode="decimal"
+          autoComplete="off"
+          value={amount}
+          disabled={disabled}
+          onChange={(event) => onAmountChange(event.target.value)}
+          placeholder="0.00"
+          aria-label={`${label} amount in ${currency.code}`}
+          className="w-full min-w-0 flex-1 bg-transparent text-2xl
+            font-semibold tracking-tight text-slate-900 outline-none
+            placeholder:text-slate-300 disabled:opacity-60
+            sm:text-3xl"
+        />
+
+        <button
+          type="button"
+          onClick={onOpenModal}
+          aria-label={`Select currency, currently ${currency.code}`}
+          className="flex shrink-0 items-center gap-2 rounded-xl
+            border border-slate-200 bg-white px-3 py-2.5
+            transition hover:border-blue-300 hover:bg-blue-50
+            focus-visible:outline-none focus-visible:ring-2
+            focus-visible:ring-blue-500"
+        >
+          {currency.countryCode && (
+            <img
+              src={`https://flagcdn.com/w40/${currency.countryCode}.png`}
+              alt=""
+              aria-hidden="true"
+              className="h-4 w-6 rounded-sm object-cover"
+            />
+          )}
+
+          <span className="text-sm font-bold text-slate-800">
+            {currency.code}
+          </span>
+
+          <svg
+            viewBox="0 0 20 20"
+            fill="none"
+            aria-hidden="true"
+            className="h-4 w-4 text-slate-400"
+          >
+            <path
+              d="m5 7 5 5 5-5"
+              stroke="currentColor"
+              strokeWidth="1.8"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            />
+          </svg>
+        </button>
+      </div>
+    </div>
+  );
+}
 
 export default CurrencyInput;
